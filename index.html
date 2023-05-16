@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Descargar Videos y Audios de YouTube</title>
+</head>
+<body>
+    <h1>Descargar Videos y Audios de YouTube</h1>
+
+    <form onsubmit="descargar(event)">
+        <label for="url">URL del video de YouTube:</label>
+        <input type="text" name="url" id="url" required>
+        <br><br>
+        <input type="submit" value="Descargar">
+    </form>
+
+    <script>
+        function descargar(event) {
+            event.preventDefault();
+            
+            var url = document.getElementById('url').value;
+            var videoId = obtenerIdVideo(url);
+
+            if (videoId) {
+                var videoUrl = "https://www.youtube.com/watch?v=" + videoId;
+                var audioUrl = "https://www.youtube.com/watch?v=" + videoId;
+
+                // Descarga del video
+                descargarArchivo(videoUrl, 'video.mp4');
+
+                // Descarga del audio
+                descargarArchivo(audioUrl, 'audio.mp3');
+            } else {
+                alert('Por favor, ingresa una URL válida de YouTube.');
+            }
+        }
+
+        function obtenerIdVideo(url) {
+            var pattern =
+                /^# Match any YouTube URL
+                (?:https?:\/\/)?    # Optional scheme. Either http or https
+                (?:www\.)?        # Optional www subdomain
+                (?:               # Group host alternatives
+                  youtu\.be\/      # Either youtu.be,
+                | youtube\.com    # or youtube.com
+                  (?:             # Group path alternatives
+                    \/embed\/       # Either /embed/
+                  | \/v\/           # or /v/
+                  | \/watch\?v=    # or /watch\?v=
+                  )               # End path alternatives.
+                )                 # End host alternatives.
+                ([\w-]{11})       # The video ID.
+                $/x;
+
+            var result = url.match(pattern);
+
+            if (result) {
+                return result[1];
+            }
+
+            return false;
+        }
+
+        function descargarArchivo(url, nombreArchivo) {
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = nombreArchivo;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
